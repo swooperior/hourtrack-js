@@ -88,3 +88,8 @@ function saveHours(startDate,endDate){
     var record = {"start":startDate,"end":endDate,"hours":hours,"wages":wages};
     return record;
 }
+
+function loadHours(){
+    var request = new XMLHttpRequest;
+    
+}
