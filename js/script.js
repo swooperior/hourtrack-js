@@ -90,6 +90,6 @@ function saveHours(startDate,endDate){
 }
 
 function loadHours(){
-    var request = new XMLHttpRequest;
-    
+    var hours = $.get("../updateHours.php?action=load");
+
 }
