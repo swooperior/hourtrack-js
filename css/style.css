@@ -1,0 +1,41 @@
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    font-size:20px;
+}
+
+#clock{
+    font-size:30px;
+    font-weight:bold;
+    
+    width:100%;
+    text-align:center;
+}
+#timer{
+    font-size:30px;
+    font-weight:bold;
+    
+    width:100%;
+    text-align:center;
+}
+#buttonmenu{
+    width:70%;
+    height:auto;
+    margin:0 auto;
+    text-align:center;
+    vertical-align:-webkit-baseline-middle;
+}
+#inMenu{
+    display:block;
+}
+#outMenu{
+    display:none;
+}
+#breakMenu{
+    display:none;
+}
+button{
+    background-color:rgba(255,255,255,0.5);
+    border-radius:4px;
+    border-style:solid;
+    font-size:20px;
+}
