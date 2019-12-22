@@ -1,7 +1,7 @@
-** Hourtrack-js **
+# Hourtrack-js
 A web-based javascript hourly wage tracker.
 
-** ToDo; **
+## ToDo;
 * Generate reports from json data
     * Earnings from current period
     * Earnings between dates
