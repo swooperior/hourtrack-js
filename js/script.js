@@ -72,7 +72,7 @@ function calcHours(startDate,endDate, format="default"){
     var duration = endT - startT;
     var hours = (duration / (1000 * 60 * 60));
     if(format == "default"){
-        return hours.toFixed(3);
+        return hours.toFixed(2);
     }else if(format="string"){
         var hs = Math.floor(hours);
         var ms = hours % 1;
@@ -81,8 +81,14 @@ function calcHours(startDate,endDate, format="default"){
         ss = Math.round(ss * 60);
         ms = Math.floor(ms);
         return(hs+"h "+ms+"m "+ss+"s");
-    }
+    } 
+}
 
+function chckTime(){
+    if(inT != null){
+        txt_timer.innerHTML = calcHours(inT,new Date(),"string")+" | Earned: &pound;"+calcWage(calcHours(inT,new Date()));
+        var t = setTimeout(chckTime(inT), 500);
+    }
     
 }
 
@@ -131,7 +137,7 @@ function loadHours(){
                     goActive();
                     inT = records[records.length-1].start;
                     txt_clock.innerHTML = "Started: " +inT.toLocaleString();
-                    txt_timer.innerHTML = calcHours(inT,new Date(),"string")+" | Earned: &pound;"+calcWage(calcHours(inT,new Date()));
+                    chckTime(inT);
                 }
             }
         }
