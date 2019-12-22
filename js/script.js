@@ -35,7 +35,7 @@ function punch(inout="in"){
     if(inout == "in"){
         inT = new Date();
         goActive();
-        txt_timer.innerHTML = inT.toLocaleString();
+        txt_clock.innerHTML = inT.toLocaleString();
         saveHours(inT,null);
     }else{
         outT = new Date();
@@ -66,12 +66,24 @@ function calcWage(hours){
     return wages;
 }
 
-function calcHours(startDate,endDate){
+function calcHours(startDate,endDate, format="default"){
     var startT = startDate.getTime();
     var endT = endDate.getTime();
     var duration = endT - startT;
     var hours = (duration / (1000 * 60 * 60));
-    return hours.toFixed(2);
+    if(format == "default"){
+        return hours.toFixed(3);
+    }else if(format="string"){
+        var hs = Math.floor(hours);
+        var ms = hours % 1;
+        ms = (ms * 60).toFixed(2);
+        var ss = ms % 1;
+        ss = Math.round(ss * 60);
+        ms = Math.floor(ms);
+        return(hs+"h "+ms+"m "+ss+"s");
+    }
+
+    
 }
 
 function saveHours(startDate,endDate){
@@ -118,7 +130,8 @@ function loadHours(){
                 if(records[records.length-1].end == ""){
                     goActive();
                     inT = records[records.length-1].start;
-                    txt_timer.innerHTML = records[records.length - 1].start;
+                    txt_clock.innerHTML = "Started: " +inT.toLocaleString();
+                    txt_timer.innerHTML = calcHours(inT,new Date(),"string")+" | Earned: &pound;"+calcWage(calcHours(inT,new Date()));
                 }
             }
         }
