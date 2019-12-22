@@ -72,7 +72,7 @@ function calcHours(startDate,endDate, format="default"){
     var duration = endT - startT;
     var hours = (duration / (1000 * 60 * 60));
     if(format == "default"){
-        return hours.toFixed(2);
+        return hours.toFixed(4);
     }else if(format="string"){
         var hs = Math.floor(hours);
         var ms = hours % 1;
@@ -87,7 +87,7 @@ function calcHours(startDate,endDate, format="default"){
 function chckTime(){
     if(inT != null){
         txt_timer.innerHTML = calcHours(inT,new Date(),"string")+" | Earned: &pound;"+calcWage(calcHours(inT,new Date()));
-        var t = setTimeout(chckTime(inT), 500);
+        var t = setTimeout(chckTime, 500);
     }
     
 }
