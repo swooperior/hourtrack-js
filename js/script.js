@@ -5,7 +5,7 @@ var records = Array();
 var active = false;
 var inT = null;
 var outT = null;
-
+var timer;
 
 var inMenu = document.getElementById('inMenu');
 var outMenu = document.getElementById('outMenu');
@@ -35,6 +35,7 @@ function punch(inout="in"){
     if(inout == "in"){
         inT = new Date();
         goActive();
+        timer = chckTime();
         txt_clock.innerHTML = inT.toLocaleString();
         saveHours(inT,null);
     }else{
@@ -44,6 +45,7 @@ function punch(inout="in"){
            var hours = calcHours(inT,outT);
            //var wages = calcWage(hours);
             saveHours(inT,outT);
+            clearTimeout(() =>{chckTime()});
            txt_clock.innerHTML = "Hours: "+hours;
            txt_timer.innerHTML = "&pound;"+calcWage(hours);
         }
@@ -80,12 +82,13 @@ function calcHours(startDate,endDate, format="default"){
         var ss = ms % 1;
         ss = Math.round(ss * 60);
         ms = Math.floor(ms);
+        ss = Math.floor(ss);
         return(hs+"h "+ms+"m "+ss+"s");
     } 
 }
 
 function chckTime(){
-    if(inT != null){
+    if(inT != null && active == true){
         txt_timer.innerHTML = calcHours(inT,new Date(),"string")+" | Earned: &pound;"+calcWage(calcHours(inT,new Date()));
         var t = setTimeout(chckTime, 500);
     }
@@ -137,7 +140,7 @@ function loadHours(){
                     goActive();
                     inT = records[records.length-1].start;
                     txt_clock.innerHTML = "Started: " +inT.toLocaleString();
-                    chckTime(inT);
+                    chckTime();
                 }
             }
         }
