@@ -1,10 +1,10 @@
 <?php
+
 header('Content-Type: application/json');
-//Takes the current time and adds it to the json file.
+
 $furi = "hours.json";
 $file = file_get_contents($furi);
 $records = json_decode($file);
-
 
 
 if(!isset($_GET["action"])){
@@ -32,15 +32,14 @@ if(!isset($_GET["action"])){
 function save_record($records,$record){
     
     if(count($records) > 0){
-        if($records[count($records)-1]->end == null){
+        if($records[count($records)-1]->end == ""){
+            //If the end date of the last record saved was not defined, 
+            //pop this record from the array so it is not duplicated.
            array_pop($records);
         }
     }
+    //Push this record to the records array
     array_push($records, $record);
+    //Overwrite the entire contents of the json file with the updated records array.
     file_put_contents("hours.json", json_encode($records));
-}
-
-function update_record($record){
-    
-
 }

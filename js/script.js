@@ -1,6 +1,6 @@
 let wage = 8.21; //per hour
 
-var records = [];
+var records = Array();
 
 var active = false;
 var inT = null;
@@ -75,7 +75,7 @@ function calcHours(startDate,endDate){
 }
 
 function saveHours(startDate,endDate){
-    loadHours();
+    
     //Add some checking to see if end date is null in previous record
     if(endDate != null){
         var hours = calcHours(startDate,endDate);
@@ -95,37 +95,61 @@ function saveHours(startDate,endDate){
             console.log(e);
         }
 });
+loadHours();
 }
 
 function loadHours(){
+    var nRecords = Array();
     var hours = $.get("updateHours.php", function(response){
         if(response.length > 0){
-
-       
-        for(var i = 0; i < response.length; i++){
-            var nRecords = Array();
-            response[i].start = new Date(response[i].start);
-            if(response[i].end != ""){
-                response[i].end = new Date(response[i].end);
+            console.log("Res length: "+response.length);
+            for(var i = 0; i < response.length; i++){      
+                response[i].start = new Date(response[i].start);
+                if(response[i].end != ""){
+                    response[i].end = new Date(response[i].end);
+                }
+                nRecords.push(response[i]);
             }
-            nRecords.push(response[i]);
+            records = nRecords; 
+            //records = response;
+            console.log(records);
+            console.log(nRecords.length);    
+            if(records.length >= 1){
+                if(records[records.length-1].end == ""){
+                    goActive();
+                    inT = records[records.length-1].start;
+                    txt_timer.innerHTML = records[records.length - 1].start;
+                }
+            }
         }
-        records = nRecords; 
-        //records = response;
-        console.log(records);
-        console.log(records.length);
-        if(records.length >= 1){
-            if(records[records.length-1].end == ""){
-                goActive();
-                inT = records[records.length-1].start;
-                txt_clock.innerHTML = records[records.length - 1].start;
+    });
+}
+
+function report_total_earnings(){
+    loadHours();
+    var tWages = 0.0;
+    var tHours = 0.0;
+    console.log(records.length);
+    if(records.length > 0){
+        for(i=0;i < records.length; i++){
+            if(records[i].end != null){
+                tWages += parseFloat(records[i].wages);
+                tHours += parseFloat(records[i].hours);
             }
         }
     }
-    });
-    
-    
-    
-    
+    return {"wages":tWages,"hours":tHours};
 }
+
+function report_weekly_earnings(){
+    var tWages;
+    var tHours;
+    var today = new Date();
+    for(i = 0;i < records.length; i++){
+        //find the most recent monday and start counting from there
+    }
+}
+
+
+
 $( document ).ready(loadHours());
