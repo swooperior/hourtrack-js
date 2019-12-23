@@ -1,60 +1,59 @@
 // Replace the wage variable with your wage per hour.
 let wage = 8.21; //per hour
 
-var records = Array();
+var records = [];
 var active = false;
-var inT = null;
+var punchInTime = null;
 var outT = null;
 var timer;
 
-var inMenu = document.getElementById('inMenu');
-var outMenu = document.getElementById('outMenu');
-var breakMenu = document.getElementById('breakMenu');
-var txt_clock = document.getElementById('clock');
-var txt_timer = document.getElementById('timer');
-
-
+var inMenu = $("#inMenu");;
+var outMenu = $('#outMenu');
+var breakMenu = $('#breakMenu');
+var txt_clock = $('#clock');
+var txt_timer = $('#timer');
 
 function goActive(){
     if(active == false){
         active = true;
-        inMenu.style.display = "none";
-        outMenu.style.display = "block";
-        timer = chckTime();
+        inMenu.hide();
+        outMenu.show();
+        timer = checkTime();
     }
 }
 function goInactive(){
     if(active == true){
         active = false;
-        inMenu.style.display = "block";
-        outMenu.style.display = "none";
-        breakMenu.style.display = "none";
-        clearTimeout(() =>{chckTime()});
-        timer = null;
-        inT = null;
+        inMenu.show()
+        outMenu.hide()
+        breakMenu.hide()
+        clearTimeout(timer);
+        punchInTime = null;
         outT = null;
     }
 }
 
-function punch(inout="in"){
-    if(inout == "in"){
-        inT = new Date();
-        goActive();
-        txt_clock.innerHTML = inT.toLocaleString();
-        saveHours(inT,null);
-    }else{
-        outT = new Date();
-        if(inT != null){
-           var hours = calcHours(inT,outT);
-           //var wages = calcWage(hours);
-            saveHours(inT,outT);
-            goInactive();
-           txt_clock.innerHTML = "Hours: "+hours;
-           txt_timer.innerHTML = "&pound;"+calcWage(hours);
-        }
+function punchIn(){
+    punchInTime = new Date();
+    goActive();
+    txt_clock.html(punchInTime.toLocaleString());
+    saveHours(punchInTime,null);
+}
+       
+function punchOut(){
+    outT = new Date();
+    if(punchInTime != null){
+        var hours = calculateHours(punchInTime,outT);
+        //var wages = calculateWage(hours);
+        saveHours(punchInTime,outT);
+        goInactive();
+        txt_clock.html("Hours: "+hours);
+        txt_timer.html("&pound;"+calculateWage(hours));
     }
 }
 
+
+//Later.
 function breakTime(startstop="start"){
     if (startstop == "start"){
         var bStart = new Date();
@@ -65,13 +64,14 @@ function breakTime(startstop="start"){
     }
     
 }
+//Later.--------
 
-function calcWage(hours){
-    var wages = (hours*wage).toFixed(2);
-    return wages;
+
+function calculateWage(hours){
+    return (hours*wage).toFixed(2);
 }
 
-function calcHours(startDate,endDate, format="default"){
+function calculateHours(startDate,endDate, format="default"){
     var startT = startDate.getTime();
     var endT = endDate.getTime();
     var duration = endT - startT;
@@ -89,10 +89,10 @@ function calcHours(startDate,endDate, format="default"){
     } 
 }
 
-function chckTime(){
-    if(inT != null && active == true){
-        txt_timer.innerHTML = calcHours(inT,new Date(),"string")+" | Earned: &pound;"+calcWage(calcHours(inT,new Date()));
-        var t = setTimeout(chckTime, 500);
+function checkTime(){
+    if(punchInTime != null && active == true){
+        txt_timer.html(calculateHours(punchInTime,new Date(),"string")+" | Earned: &pound;"+calculateWage(calculateHours(punchInTime,new Date())));
+        timer = setTimeout(checkTime, 500);
     }
     
 }
@@ -101,8 +101,8 @@ function saveHours(startDate,endDate){
     
     //Add some checking to see if end date is null in previous record
     if(endDate != null){
-        var hours = calcHours(startDate,endDate);
-        var wages = calcWage(hours);
+        var hours = calculateHours(startDate,endDate);
+        var wages = calculateWage(hours);
     }else{
         var hours = null;
         var wages = null;
@@ -148,9 +148,9 @@ function loadHours(){
             if(records.length >= 1){
                 if(records[records.length-1].end == ""){
                     goActive();
-                    inT = records[records.length-1].start;
-                    txt_clock.innerHTML = "Started: " +inT.toLocaleString();
-                    chckTime();
+                    punchInTime = records[records.length-1].start;
+                    txt_clock.html("Started: " +punchInTime.toLocaleString());
+                    checkTime();
                 }
             }
         }else{
@@ -169,9 +169,9 @@ function loadHours(){
                 if(records.length >= 1){
                     if(records[records.length-1].end == null){
                         goActive();
-                        inT = records[records.length-1].start;
-                        txt_clock.innerHTML = "Started: " +inT.toLocaleString();
-                        chckTime();
+                        punchInTime = records[records.length-1].start;
+                        txt_clock.html("Started: " +punchInTime.toLocaleString());
+                        checkTime();
                     }
                 }
             }
