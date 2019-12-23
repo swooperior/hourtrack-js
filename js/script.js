@@ -123,7 +123,7 @@ function saveHours(startDate,endDate){
 function loadHours(){
     var nRecords = Array();
     var hours = $.get("updateHours.php", function(response){
-        if(response.length > 0){
+        if(response != null && response.length > 0){
             console.log("Res length: "+response.length);
             for(var i = 0; i < response.length; i++){      
                 response[i].start = new Date(response[i].start);
