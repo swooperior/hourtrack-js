@@ -2,7 +2,6 @@
 let wage = 8.21; //per hour
 
 var records = Array();
-
 var active = false;
 var inT = null;
 var outT = null;
@@ -84,9 +83,8 @@ function calcHours(startDate,endDate, format="default"){
         var ms = hours % 1;
         ms = (ms * 60).toFixed(2);
         var ss = ms % 1;
-        ss = Math.round(ss * 60);
         ms = Math.floor(ms);
-        ss = Math.floor(ss);
+        ss = Math.round(ss * 60);
         return(hs+"h "+ms+"m "+ss+"s");
     } 
 }
@@ -110,14 +108,22 @@ function saveHours(startDate,endDate){
         var wages = null;
     }
     var record = {"start":startDate,"end":endDate,"hours":hours,"wages":wages};
+    records.push(record);
     //console.log(record);
     $.ajax({
         type: "POST",
         url: "updateHours.php",
         dataType: "JSON",
         data: {"record":record},
+        success: (s)=>{console.log(s)},
         error: function(e){
             console.log(e);
+            //Save to local storage fallback
+            if(records[records.length - 1].end == null){
+                records.pop();
+                records.push(record);
+            }
+            localStorage.setItem("records",JSON.stringify(records));
         }
 });
 //loadHours();
@@ -145,6 +151,28 @@ function loadHours(){
                     inT = records[records.length-1].start;
                     txt_clock.innerHTML = "Started: " +inT.toLocaleString();
                     chckTime();
+                }
+            }
+        }else{
+            alert('Could not retrieve data from db, attempting to load local data.');
+            var jsonData = JSON.parse(localStorage.getItem("records"));
+            for(i=0;i < jsonData.length; i++){
+                jsonData[i].start = new Date(jsonData[i].start);
+                if(jsonData[i].end != null){
+                    jsonData[i].end = new Date(jsonData[i].end);
+                }
+                records.push(jsonData[i]);
+            }
+            if(records == null){
+                records = [];
+            }else{
+                if(records.length >= 1){
+                    if(records[records.length-1].end == null){
+                        goActive();
+                        inT = records[records.length-1].start;
+                        txt_clock.innerHTML = "Started: " +inT.toLocaleString();
+                        chckTime();
+                    }
                 }
             }
         }
