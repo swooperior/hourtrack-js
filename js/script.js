@@ -1,3 +1,4 @@
+// Replace the wage variable with your wage per hour.
 let wage = 8.21; //per hour
 
 var records = Array();
