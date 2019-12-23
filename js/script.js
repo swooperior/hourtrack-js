@@ -45,6 +45,8 @@ function punch(inout="in"){
            var hours = calcHours(inT,outT);
            //var wages = calcWage(hours);
             saveHours(inT,outT);
+            inT = null;
+            outT = null;
             clearTimeout(() =>{chckTime()});
            txt_clock.innerHTML = "Hours: "+hours;
            txt_timer.innerHTML = "&pound;"+calcWage(hours);
@@ -122,7 +124,7 @@ loadHours();
 function loadHours(){
     var nRecords = Array();
     var hours = $.get("updateHours.php", function(response){
-        if(response.length > 0){
+        if(response != null && response.length > 0){
             console.log("Res length: "+response.length);
             for(var i = 0; i < response.length; i++){      
                 response[i].start = new Date(response[i].start);
