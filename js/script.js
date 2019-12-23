@@ -20,6 +20,7 @@ function goActive(){
         active = true;
         inMenu.style.display = "none";
         outMenu.style.display = "block";
+        timer = chckTime();
     }
 }
 function goInactive(){
@@ -28,6 +29,8 @@ function goInactive(){
         inMenu.style.display = "block";
         outMenu.style.display = "none";
         breakMenu.style.display = "none";
+        clearTimeout(() =>{chckTime()});
+        timer = null;
     }
 }
 
@@ -35,17 +38,15 @@ function punch(inout="in"){
     if(inout == "in"){
         inT = new Date();
         goActive();
-        timer = chckTime();
         txt_clock.innerHTML = inT.toLocaleString();
         saveHours(inT,null);
     }else{
         outT = new Date();
-        goInactive();
         if(inT != null){
            var hours = calcHours(inT,outT);
            //var wages = calcWage(hours);
             saveHours(inT,outT);
-            clearTimeout(() =>{chckTime()});
+            goInactive();
            txt_clock.innerHTML = "Hours: "+hours;
            txt_timer.innerHTML = "&pound;"+calcWage(hours);
         }
@@ -116,7 +117,7 @@ function saveHours(startDate,endDate){
             console.log(e);
         }
 });
-loadHours();
+//loadHours();
 }
 
 function loadHours(){
