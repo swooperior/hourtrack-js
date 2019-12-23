@@ -31,6 +31,8 @@ function goInactive(){
         breakMenu.style.display = "none";
         clearTimeout(() =>{chckTime()});
         timer = null;
+        inT = null;
+        outT = null;
     }
 }
 
