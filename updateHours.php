@@ -42,5 +42,9 @@ function save_record($records,$record){
     //Push this record to the records array
     array_push($records, $record);
     //Overwrite the entire contents of the json file with the updated records array.
-    file_put_contents("hours.json", json_encode($records));
+    if(file_put_contents("hours.json", json_encode($records))){
+        $okay_array = ["Status","200"];
+        echo(json_encode($okay_array));
+    }
+    
 }

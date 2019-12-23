@@ -113,11 +113,11 @@ function saveHours(startDate,endDate){
     $.ajax({
         type: "POST",
         url: "updateHours.php",
-        dataType: "JSON",
+        dataType: "json",
         data: {"record":record},
-        success: (s)=>{console.log(s)},
-        error: function(e){
-            console.log(e);
+        success: (s)=>{console.log(s+" Success!")},
+        error: function(e,x){
+            console.log(x+" Error!");
             //Save to local storage fallback
             if(records[records.length - 1].end == null){
                 records.pop();
@@ -130,16 +130,20 @@ function saveHours(startDate,endDate){
 }
 
 function loadHours(){
-    var nRecords = Array();
+    var nRecords = [];
     var hours = $.get("updateHours.php", function(response){
-        if(response != null && response.length > 0){
-            console.log("Res length: "+response.length);
-            for(var i = 0; i < response.length; i++){      
-                response[i].start = new Date(response[i].start);
-                if(response[i].end != ""){
-                    response[i].end = new Date(response[i].end);
+        console.log(response);
+        if(response != null){
+            console.log('Loading from Ajax');
+            if(response.length > 0){
+                console.log("Res length: "+response.length);
+                for(var i = 0; i < response.length; i++){      
+                    response[i].start = new Date(response[i].start);
+                    if(response[i].end != ""){
+                        response[i].end = new Date(response[i].end);
+                    }
+                    nRecords.push(response[i]);
                 }
-                nRecords.push(response[i]);
             }
             records = nRecords; 
             //records = response;
@@ -152,9 +156,10 @@ function loadHours(){
                     txt_clock.html("Started: " +punchInTime.toLocaleString());
                     checkTime();
                 }
-            }
-        }else{
-            alert('Could not retrieve data from db, attempting to load local data.');
+            }   
+        }
+    }).fail((response) =>{
+        console.log('Loading from LocalStorage');
             var jsonData = JSON.parse(localStorage.getItem("records"));
             for(i=0;i < jsonData.length; i++){
                 jsonData[i].start = new Date(jsonData[i].start);
@@ -175,7 +180,6 @@ function loadHours(){
                     }
                 }
             }
-        }
     });
 }
 
@@ -206,4 +210,4 @@ function report_weekly_earnings(){
 
 
 
-$( document ).ready(loadHours());
+$( document ).ready(loadHours);
