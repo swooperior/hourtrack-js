@@ -4,7 +4,7 @@ let wage = 8.21; //per hour
 var records = [];
 var active = false;
 var punchInTime = null;
-var outT = null;
+var punchOutTime = null;
 var timer;
 
 var inMenu = $("#inMenu");;
@@ -12,12 +12,14 @@ var outMenu = $('#outMenu');
 var breakMenu = $('#breakMenu');
 var txt_clock = $('#clock');
 var txt_timer = $('#timer');
+var txt_report = $('#report');
 
 function goActive(){
     if(active == false){
         active = true;
         inMenu.hide();
         outMenu.show();
+        txt_report.hide();
         timer = checkTime();
     }
 }
@@ -27,9 +29,10 @@ function goInactive(){
         inMenu.show()
         outMenu.hide()
         breakMenu.hide()
+        txt_report.show();
         clearTimeout(timer);
         punchInTime = null;
-        outT = null;
+        punchOutTime = null;
     }
 }
 
@@ -41,11 +44,11 @@ function punchIn(){
 }
        
 function punchOut(){
-    outT = new Date();
+    punchOutTime = new Date();
     if(punchInTime != null){
-        var hours = calculateHours(punchInTime,outT);
+        var hours = calculateHours(punchInTime,punchOutTime);
         //var wages = calculateWage(hours);
-        saveHours(punchInTime,outT);
+        saveHours(punchInTime,punchOutTime);
         goInactive();
         txt_clock.html("Hours: "+hours);
         txt_timer.html("&pound;"+calculateWage(hours));
@@ -91,7 +94,7 @@ function calculateHours(startDate,endDate, format="default"){
 
 function checkTime(){
     if(punchInTime != null && active == true){
-        txt_timer.html(calculateHours(punchInTime,new Date(),"string")+" | Earned: &pound;"+calculateWage(calculateHours(punchInTime,new Date())));
+        txt_timer.html(calculateHours(punchInTime,new Date(),"string")+" | &pound;"+calculateWage(calculateHours(punchInTime,new Date())));
         timer = setTimeout(checkTime, 500);
     }
     
@@ -155,6 +158,7 @@ function loadHours(){
                     punchInTime = records[records.length-1].start;
                     txt_clock.html("Started: " +punchInTime.toLocaleString());
                     checkTime();
+                    
                 }
             }   
         }
@@ -183,31 +187,69 @@ function loadHours(){
     });
 }
 
-function report_total_earnings(){
-    loadHours();
+function reportTotalEarnings(){
     var tWages = 0.0;
     var tHours = 0.0;
     console.log(records.length);
     if(records.length > 0){
         for(i=0;i < records.length; i++){
-            if(records[i].end != null){
+            if(records[i].end != ""){
+                console.log(records[i].end);
                 tWages += parseFloat(records[i].wages);
                 tHours += parseFloat(records[i].hours);
             }
         }
     }
-    return {"wages":tWages,"hours":tHours};
+    return {"wages":tWages.toFixed(2),"hours":tHours.toFixed(2)};
 }
 
-function report_weekly_earnings(){
-    var tWages;
-    var tHours;
+function reportWeeklyEarnings(){
+    
+    var tWages = 0.0;
+    var tHours = 0.0;
+    var recordCopy = records.reverse();
     var today = new Date();
-    for(i = 0;i < records.length; i++){
-        //find the most recent monday and start counting from there
+    var from = getLastSunday(today);
+    console.log(from);
+    var thisWeek = [];
+
+    for(i=0;i < recordCopy.length;i++){
+
+        if(recordCopy[i].start > from && recordCopy[i].start < today){
+            if(records[i].end != ""){
+                tWages += parseFloat(records[i].wages);
+                tHours += parseFloat(records[i].hours);
+            }
+        }
     }
+    from.setDate(from.getDate() + 1);
+    return {"wages":tWages.toFixed(2),"hours":tHours.toFixed(2),"from":from};    
+}
+
+function getLastSunday(d) {
+    var t = new Date(d);
+    t.setDate(t.getDate() - t.getDay());
+    //set time of t to 11:59:59pm
+    t.setHours(23,59,59,0);
+    return t;
+  }
+
+var oldHtml;
+
+function generateWeeklyReport(){
+    loadHours();
+    var report_data = reportWeeklyEarnings();
+    oldHtml = txt_report.html();
+    txt_report.html('Week start:<br>'+report_data.from.toLocaleDateString()+'<br>Hours worked this week: '+report_data.hours+'<br>Wages earned: &pound;'+report_data.wages+'<br><button onClick="closeReport()">Close Report</button>');
+}
+
+function closeReport(){
+    txt_report.html(oldHtml);
 }
 
 
+$( document ).ready(()=>{
+loadHours();
 
-$( document ).ready(loadHours);
+
+});

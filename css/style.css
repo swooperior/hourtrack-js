@@ -34,9 +34,21 @@ body{
 #breakMenu{
     display:none;
 }
+#report{
+    display:block;
+    width:100%;
+    height:auto;
+    text-align:center;
+    margin-top:40px;
+}
 button{
     background-color:rgba(255,255,255,0.5);
     border-radius:4px;
     border-style:solid;
     font-size:20px;
+}
+button.bottom{
+    position:absolute;
+    bottom:0;
+    left:0;
 }
